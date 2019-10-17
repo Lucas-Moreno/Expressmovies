@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+	<html lang="fr">
+        <head>
+            <meta charset="UTF-8">
+            <title>Express Movies</title>
+            <link rel="stylesheet" href="../public/style.css">
+        </head>
+	<body>
+
+		<div class="central">
+            <% include ./partials/header %>
+			<h1><%= title %></h1>
+			<br>
+			<div id="login">
+				<form>
+					<legend>Veuillez saisir vos identifiants</legend>
+					<label for="email">email</label>
+					<input type="text" name="email" id="email">
+					<label for="password">mot de passe</label>
+					<input type="password" name="password" id="password">
+					<button type="submit">connexion</button>
+				</form>
+            </div>
+            <div id="profil" style="display:none">
+                <div id="disconnectBtn">déconnexion</div>
+            </div>
+		</div>
+
+		<footer>
+			<% include ./partials/footer %>
+		</footer>
+		<script>
+			var form = document.querySelector('form');
+            form.addEventListener("submit", loginUser);	
+            
+            var loginArea = document.querySelector('#login');
+            var profileArea = document.querySelector('#profil');
+            var disconnectBtn = document.querySelector('#disconnectBtn');
+            disconnectBtn.addEventListener('click', disconnect);
+            var connectionLinkArea = document.querySelector('#connectionLink');
+            handleFormDisplay();
+
+			function loginUser(event) {				
+                loginUserWithXHR(event);
+			}	
+			
+			function loginUserWithXHR(event) {		
+				event.preventDefault();
+                console.log('loginUserWithXHR');		
+
+				var xhr = new XMLHttpRequest();
+				xhr.open("POST", '/login', true);
+
+				xhr.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
+
+				xhr.onreadystatechange = function() {
+					if(xhr.readyState == XMLHttpRequest.DONE && xhr.status == 200) {
+                        var token = xhr.response;
+                        localStorage.setItem('token', token);
+                        switchToLoggedInMode();
+						form.reset();
+					}
+				}				
+				var email = document.getElementById('email').value;
+				var password = document.getElementById('password').value;
+				var payLoad = "email=" + email + "&" + "password=" + password; 
+				xhr.send(payLoad); 				
+            }
+            function handleFormDisplay(){
+                if(localStorage.getItem('token')){
+                    switchToLoggedInMode();
+                }else{
+                    switchToLoggedOutMode();
+                }
+            }
+            
+            function switchToLoggedInMode() {
+                loginArea.style.display = "none";
+                profileArea.style.display = "block";
+                connectionLinkArea.innerHTML = '<a href="/login"><li>Déconnexion<li></a>'
+            }
+            function switchToLoggedOutMode() {
+                loginArea.style.display = "block";
+                profileArea.style.display = "none ";
+                connectionLinkArea.innerHTML = '<a href="/login"><li>Connexion<li></a>'
+            }
+            function disconnect(){
+                switchToLoggedOutMode();
+                localStorage.removeItem('token');
+            }
+		</script>
+	</body>
+</html>
