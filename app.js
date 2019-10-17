@@ -6,7 +6,7 @@ const upload = multer();
 
 const jwt = require('jsonwebtoken'); 
 
-const PORT = 3000;
+const PORT = process.env.PORT || 3000;
 let frenchMovies = [];
 
 app.use('/public' , express.static('public'))
