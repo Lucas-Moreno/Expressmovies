@@ -5,14 +5,21 @@ const multer = require('multer');
 const upload = multer();
 
 const jwt = require('jsonwebtoken'); 
+const expressJwt = require('express-jwt');
 
 const PORT = process.env.PORT || 3000;
 let frenchMovies = [];
 
 app.use('/public' , express.static('public'))
 
+const secret = 'ijegizoEDEDgnoiaoioàçSfenkznefZoanfdazedazkPËDZSd';
+
+app.use(expressJwt({ secret : secret }).unless({ path : ['/login']}));
+
 app.set('views', './views');
 app.set('view engine', 'ejs');
+
+
 
 app.get('/movies', function(req, res){
 
@@ -56,7 +63,7 @@ app.get('/login', function(req, res){
 })
 
 const fakeUser = { email: 'testuser@testmail.fr', password: 'qsd'};
-const secret = 'ijegizoEDEDgnoiaoioàçSfenkznefZoanfdazedazkPËDZSd';
+
 
 app.post('/login', urlencodedParser, function(req, res){
     if(fakeUser.email === req.body.email && fakeUser.password === req.body.password){

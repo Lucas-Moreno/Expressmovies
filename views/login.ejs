@@ -23,6 +23,8 @@
             </div>
             <div id="profil" style="display:none">
                 <div id="disconnectBtn">déconnexion</div>
+                <div id="display-payload">voir le payload</div>
+                <div id="decoded-payload"></div>
             </div>
 		</div>
 
@@ -36,6 +38,10 @@
             var loginArea = document.querySelector('#login');
             var profileArea = document.querySelector('#profil');
             var disconnectBtn = document.querySelector('#disconnectBtn');
+
+            var displayPayloadBtn = document.querySelector('#display-payload');
+            displayPayloadBtn.addEventListener('click', displayPayload);
+
             disconnectBtn.addEventListener('click', disconnect);
             var connectionLinkArea = document.querySelector('#connectionLink');
             handleFormDisplay();
@@ -83,6 +89,20 @@
                 loginArea.style.display = "block";
                 profileArea.style.display = "none ";
                 connectionLinkArea.innerHTML = '<a href="/login"><li>Connexion<li></a>'
+            }
+            function displayPayload(){
+                var payload = parseJWT();
+                var decodedPayloadDiv = document.querySelector('#decoded-payload');
+                decodedPayloadDiv.innerHTML = '<pre>' + JSON.stringify(payload) + '</pre>'
+            }
+            function parseJWT(){
+                var tokenFromStorage = localStorage.getItem('token');
+                if(tokenFromStorage){
+                    var based64Payload = tokenFromStorage.split('.')[1];
+                    return JSON.parse(window.atob(based64Payload));
+                } else {
+                    return 'not token to parse';
+                }
             }
             function disconnect(){
                 switchToLoggedOutMode();
